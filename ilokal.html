@@ -1,0 +1,2387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iLOKAL – Explore the City of Love</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* ===== TOKENS ===== */
+      :root {
+        --green: #2b7a42;
+        --green-badge: #3d9b50;
+        --green-dark: #1e5c31;
+        --brown: #2d1810;
+        --red: #c8173a;
+        --gold: #d4a017;
+        --white: #ffffff;
+        --gray-bg: #efefef;
+        --gray-card: #f7f7f7;
+        --border: #e0e0e0;
+        --text: #1a1a1a;
+        --text-mid: #555;
+        --text-sub: #999;
+        --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.07);
+        --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+        --r-pill: 50px;
+        --r-lg: 22px;
+        --r-md: 16px;
+        --r-sm: 10px;
+        --phone-w: 390px;
+        --phone-h: 820px;
+      }
+
+      /* ===== BASE ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: radial-gradient(
+          ellipse at 30% 20%,
+          #1a3a2a 0%,
+          #0d1a12 60%,
+          #050d09 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* ===== PHONE FRAME ===== */
+      .phone-outer {
+        width: calc(var(--phone-w) + 18px);
+        height: calc(var(--phone-h) + 34px);
+        background: linear-gradient(160deg, #2a2a2a 0%, #111 100%);
+        border-radius: 52px;
+        padding: 17px 9px;
+        box-shadow:
+          0 0 0 1px #3a3a3a,
+          0 50px 100px rgba(0, 0, 0, 0.8),
+          0 25px 50px rgba(0, 0, 0, 0.5),
+          inset 0 0 0 2px #4a4a4a;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .phone-notch {
+        position: absolute;
+        top: 17px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 110px;
+        height: 22px;
+        background: #000;
+        border-radius: 0 0 16px 16px;
+        z-index: 200;
+      }
+
+      .phone-screen {
+        width: var(--phone-w);
+        height: var(--phone-h);
+        background: var(--gray-bg);
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* ===== SCREENS ===== */
+      .screen {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--gray-bg);
+      }
+      .screen.active {
+        display: flex;
+        animation: screenIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      @keyframes screenIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== SCROLL BODY ===== */
+      .scroll-body {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .scroll-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ===== AUTH SCREENS ===== */
+      .auth-bg {
+        position: absolute;
+        inset: 0;
+        background: url("iloilo_bg.png") center/cover no-repeat;
+        z-index: 0;
+      }
+      .auth-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.15) 0%,
+          rgba(0, 0, 0, 0.05) 40%,
+          rgba(0, 0, 0, 0) 60%,
+          rgba(255, 255, 255, 0) 70%
+        );
+      }
+
+      .auth-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 60px 30px 0;
+        flex-shrink: 0;
+      }
+
+      .auth-logo {
+        width: 260px;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
+      }
+
+      .auth-logo-fallback {
+        font-size: 46px;
+        font-weight: 900;
+        color: white;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        letter-spacing: -2px;
+        display: none;
+      }
+      .auth-logo-fallback em {
+        color: #e53935;
+        font-style: normal;
+      }
+      .auth-logo-fallback span {
+        color: #d4a017;
+      }
+
+      .auth-tagline {
+        font-style: italic;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.92);
+        margin-top: 8px;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+
+      /* Login floating inputs */
+      .login-fields-wrap {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        padding: 0 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .float-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        border-radius: var(--r-pill);
+        padding: 15px 22px;
+        font-family: "Nunito", sans-serif;
+        font-size: 15px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .float-input::placeholder {
+        color: #999;
+      }
+      .float-input:focus {
+        border-color: rgba(255, 255, 255, 1);
+      }
+
+      .pw-wrap {
+        position: relative;
+      }
+      .pw-wrap .float-input {
+        padding-right: 52px;
+      }
+      .pw-eye {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 17px;
+        cursor: pointer;
+      }
+
+      .forgot-pw {
+        text-align: right;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        padding-right: 4px;
+      }
+
+      /* Auth bottom card */
+      .auth-card {
+        position: relative;
+        z-index: 1;
+        background: white;
+        border-radius: 26px 26px 0 0;
+        padding: 24px 24px 36px;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
+      }
+
+      .btn-dark {
+        width: 100%;
+        background: var(--brown);
+        color: white;
+        border: none;
+        border-radius: var(--r-pill);
+        padding: 17px;
+        font-family: "Nunito", sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          opacity 0.2s,
+          transform 0.15s;
+        margin-bottom: 14px;
+      }
+      .btn-dark:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+      .btn-dark:active {
+        transform: translateY(0);
+      }
+
+      .link-alt {
+        text-align: center;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text);
+        cursor: pointer;
+        margin-bottom: 16px;
+      }
+
+      .divider-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .divider-row hr {
+        flex: 1;
+        border: none;
+        border-top: 1.5px solid #e8e8e8;
+      }
+      .divider-row span {
+        color: #bbb;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .social-row {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+      }
+      .social-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1.5px solid #e0e0e0;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 22px;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .social-btn:hover {
+        transform: scale(1.07);
+        box-shadow: var(--shadow-sm);
+      }
+      .fa-instagram {
+        color: #e1306c;
+      }
+      .fa-google {
+        color: #4285f4;
+      }
+      .fa-facebook-f {
+        color: #1877f2;
+      }
+
+      /* Usertype card */
+      .usertype-card {
+        position: relative;
+        z-index: 1;
+        background: white;
+        border-radius: 26px 26px 0 0;
+        padding: 30px 24px 44px;
+        flex-shrink: 0;
+      }
+      .usertype-card h2 {
+        font-size: 18px;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .type-btn {
+        width: 100%;
+        background: white;
+        border: 2px solid #cccccc;
+        border-radius: var(--r-pill);
+        padding: 18px;
+        font-family: "Nunito", sans-serif;
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        margin-bottom: 16px;
+        transition: all 0.2s;
+      }
+      .type-btn:hover,
+      .type-btn.selected {
+        border-color: var(--brown);
+        background: var(--brown);
+        color: white;
+      }
+
+      /* Info card */
+      .info-card {
+        position: relative;
+        z-index: 1;
+        background: white;
+        border-radius: 26px 26px 0 0;
+        padding: 28px 24px 44px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        max-height: 72%;
+      }
+      .info-card h2 {
+        font-size: 17px;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 22px;
+      }
+      .info-input {
+        width: 100%;
+        background: white;
+        border: 2px solid #dddddd;
+        border-radius: var(--r-pill);
+        padding: 16px 22px;
+        font-family: "Nunito", sans-serif;
+        font-size: 16px;
+        color: var(--text);
+        outline: none;
+        margin-bottom: 14px;
+        transition: border-color 0.2s;
+      }
+      .info-input:focus {
+        border-color: var(--brown);
+      }
+      .info-input::placeholder {
+        color: #aaaaaa;
+      }
+
+      /* ===== TOP BAR ===== */
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 50px 18px 12px;
+        background: white;
+        flex-shrink: 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .bar-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid #eee;
+        transition: transform 0.15s;
+      }
+      .bar-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .bar-logo {
+        height: 42px;
+        object-fit: contain;
+        max-width: 160px;
+      }
+
+      .bar-logo-text {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--red);
+        letter-spacing: -0.5px;
+        display: none;
+      }
+      .bar-logo-text span {
+        color: var(--gold);
+      }
+
+      .bar-search {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #e0e0e0;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 15px;
+        color: #444;
+        transition: background 0.15s;
+      }
+      .bar-search:hover {
+        background: #f5f5f5;
+      }
+
+      /* ===== BOTTOM NAV (3-item) ===== */
+      .bottom-nav {
+        display: flex;
+        background: white;
+        border-top: 1px solid #eeeeee;
+        padding: 10px 0 22px;
+        flex-shrink: 0;
+      }
+
+      .nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        cursor: pointer;
+        color: #aaaaaa;
+        font-size: 11px;
+        font-weight: 700;
+        transition: color 0.2s;
+        position: relative;
+      }
+      .nav-item i {
+        font-size: 22px;
+      }
+      .nav-item.active {
+        color: var(--text);
+      }
+
+      .nav-badge {
+        position: absolute;
+        top: -3px;
+        right: 50%;
+        transform: translateX(12px);
+        background: #e53935;
+        color: white;
+        font-size: 9px;
+        font-weight: 800;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+      }
+
+      /* ===== HOME: FACTS CAROUSEL ===== */
+      .facts-card {
+        margin: 14px 16px;
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        position: relative;
+        height: 195px;
+        cursor: pointer;
+      }
+      .facts-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .facts-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.7) 0%,
+          rgba(0, 0, 0, 0.05) 55%
+        );
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 14px;
+      }
+      .facts-badge {
+        align-self: flex-start;
+        background: rgba(20, 20, 20, 0.75);
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 14px;
+        border-radius: var(--r-pill);
+        backdrop-filter: blur(4px);
+      }
+      .facts-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .facts-title {
+        color: white;
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+      .facts-desc {
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .facts-dots {
+        display: flex;
+        gap: 5px;
+        margin-top: 7px;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+      }
+      .dot.active {
+        background: white;
+        width: 16px;
+        border-radius: 4px;
+      }
+
+      /* ===== HOME: SECTION HEADER ===== */
+      .section-hdr {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 16px 10px;
+      }
+      .section-hdr h3 {
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .section-hdr a {
+        color: #aaaaaa;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      /* ===== CATEGORY BANNER ===== */
+      .cat-banner {
+        margin: 0 16px 10px;
+        border-radius: var(--r-md);
+        overflow: hidden;
+        position: relative;
+        height: 105px;
+        cursor: pointer;
+        transition: transform 0.18s;
+      }
+      .cat-banner:hover {
+        transform: scale(0.985);
+      }
+      .cat-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cat-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.28);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cat-label {
+        color: white;
+        font-size: 26px;
+        font-weight: 900;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        letter-spacing: -0.5px;
+      }
+
+      /* ===== PLACES LIST ===== */
+      .places-subhdr {
+        padding: 14px 16px 4px;
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .places-pill {
+        display: inline-block;
+        background: var(--green);
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        padding: 8px 28px;
+        border-radius: var(--r-sm);
+        margin: 6px 16px 12px;
+      }
+
+      .places-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        padding: 4px 16px 20px;
+      }
+
+      .place-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.18s;
+      }
+      .place-card:hover {
+        transform: scale(0.96);
+      }
+
+      .place-img-frame {
+        width: 100%;
+        height: 135px;
+        border-radius: 50% 50% 14px 14px / 38% 38% 14px 14px;
+        overflow: hidden;
+        border: 3px solid var(--green);
+      }
+      .place-img-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .place-name {
+        margin-top: 9px;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--green);
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      /* ===== ARTICLE SCREEN ===== */
+      .article-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 50px 18px 12px;
+        background: white;
+        flex-shrink: 0;
+      }
+
+      .article-green-hdr {
+        background: var(--green);
+        padding: 14px 20px 18px;
+        flex-shrink: 0;
+      }
+      .article-green-hdr h2 {
+        color: white;
+        font-size: 17px;
+        font-weight: 800;
+        text-align: center;
+        line-height: 1.3;
+      }
+
+      .article-body {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        background: #ececec;
+        -webkit-overflow-scrolling: touch;
+      }
+      .article-body::-webkit-scrollbar {
+        display: none;
+      }
+
+      .article-body-inner {
+        padding: 0 14px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Gray curve top */
+      .gray-curve {
+        height: 22px;
+        background: #ececec;
+        border-radius: 20px 20px 0 0;
+        margin: -6px 0 0;
+        flex-shrink: 0;
+      }
+
+      .a-card {
+        background: white;
+        border-radius: var(--r-md);
+        padding: 16px 16px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .a-card-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+
+      .a-card-body {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.75;
+        text-align: justify;
+      }
+
+      .a-section-title {
+        font-size: 15px;
+        font-weight: 800;
+        text-align: center;
+        margin: 14px 0 8px;
+      }
+
+      .article-instruction {
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-mid);
+        font-weight: 600;
+        padding: 2px 0;
+      }
+
+      /* Quiz */
+      .quiz-card {
+        background: white;
+        border-radius: var(--r-md);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .quiz-badge {
+        font-size: 14px;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .quiz-question {
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 18px;
+      }
+      .quiz-option {
+        font-size: 15px;
+        color: #333;
+        padding: 9px 4px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background 0.12s;
+        line-height: 1.4;
+      }
+      .quiz-option:hover {
+        background: #f5f5f5;
+      }
+      .quiz-option.correct {
+        color: #2e7d32;
+        font-weight: 800;
+      }
+      .quiz-option.wrong {
+        color: #c62828;
+      }
+
+      .quiz-correct-line {
+        margin-top: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        display: none;
+      }
+      .quiz-correct-line.show {
+        display: block;
+      }
+
+      /* Teacher instructional */
+      .instruct-list {
+        margin-top: 6px;
+      }
+      .instruct-item {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.7;
+        margin-bottom: 10px;
+        padding-left: 14px;
+        position: relative;
+      }
+      .instruct-item::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #555;
+      }
+
+      .strategy-item {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.7;
+        margin-bottom: 12px;
+      }
+
+      /* References */
+      .ref-item {
+        font-size: 12px;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 9px;
+        padding-left: 14px;
+        position: relative;
+      }
+      .ref-item::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #555;
+      }
+      .ref-link {
+        color: #1565c0;
+        text-decoration: underline;
+        word-break: break-all;
+      }
+
+      /* More pictures */
+      .more-pics-title {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .pics-scroll {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+      }
+      .pics-scroll::-webkit-scrollbar {
+        display: none;
+      }
+      .pic-thumb {
+        width: 110px;
+        height: 82px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .pics-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .pics-dots {
+        display: flex;
+        gap: 5px;
+      }
+      .swipe-hint {
+        font-size: 13px;
+        font-weight: 700;
+        color: #aaaaaa;
+      }
+
+      /* ===== PROFILE ===== */
+      .profile-logo-wrap {
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 52px 20px 18px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .profile-logo {
+        width: 260px;
+        height: auto;
+        object-fit: contain;
+      }
+      .profile-logo-text {
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--red);
+        letter-spacing: -1px;
+        display: none;
+      }
+      .profile-logo-text span {
+        color: var(--gold);
+      }
+
+      .profile-avatar {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e0e0e0;
+        margin-top: 12px;
+      }
+      .profile-name {
+        font-size: 18px;
+        font-weight: 800;
+        margin-top: 10px;
+      }
+      .profile-handle {
+        font-size: 13px;
+        color: #999;
+        margin-top: 3px;
+      }
+
+      .profile-pills {
+        display: flex;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .pill {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-family: "Nunito", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+      }
+      .pill-blue {
+        background: #2b3a8c;
+      }
+      .pill-dark {
+        background: #2d2d2d;
+      }
+
+      .profile-share {
+        font-size: 14px;
+        color: #aaaaaa;
+        font-weight: 600;
+        margin-top: 12px;
+        cursor: pointer;
+      }
+      .profile-divider {
+        width: 100%;
+        border: none;
+        border-top: 1px solid #eeeeee;
+        margin: 16px 0 0;
+      }
+
+      /* Overview */
+      .overview-wrap {
+        padding: 14px 16px;
+      }
+      .overview-hdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .overview-hdr h3 {
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .overview-hdr span {
+        font-size: 13px;
+        color: #aaaaaa;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .ov-scroll {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+      }
+      .ov-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .ov-card {
+        flex-shrink: 0;
+        width: 148px;
+        border-radius: var(--r-md);
+        overflow: hidden;
+        cursor: pointer;
+        background: var(--gray-card);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.18s;
+      }
+      .ov-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .ov-img-wrap {
+        position: relative;
+        height: 96px;
+      }
+      .ov-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .ov-cat-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ov-cat-text {
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      }
+
+      .ov-body {
+        padding: 9px 10px 11px;
+        background: white;
+      }
+      .ov-name {
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .ov-desc {
+        font-size: 11px;
+        color: #999;
+        margin-top: 2px;
+        line-height: 1.4;
+      }
+
+      /* ===== NOTIFICATIONS ===== */
+      .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .empty-state i {
+        font-size: 50px;
+        color: #dddddd;
+      }
+      .empty-state p {
+        color: #bbbbbb;
+        font-weight: 700;
+        font-size: 15px;
+      }
+
+      /* ===== SETTINGS ===== */
+      .settings-user-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: white;
+        border-radius: var(--r-md);
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .settings-user-card img {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e8e8e8;
+      }
+      .settings-user-name {
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .settings-user-type {
+        font-size: 13px;
+        color: #999;
+        margin-top: 2px;
+      }
+
+      .settings-group {
+        background: white;
+        border-radius: var(--r-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+      .settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 16px;
+        border-bottom: 1px solid #f2f2f2;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .settings-row:last-child {
+        border-bottom: none;
+      }
+      .settings-row:hover {
+        background: #fafafa;
+      }
+      .settings-row-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .settings-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-outer">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <!-- ========================= SCREEN: LOGIN ========================= -->
+        <div id="s-login" class="screen active" style="background: #b8cfe0">
+          <div class="auth-bg"></div>
+
+          <div class="auth-top">
+            <img
+              class="auth-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="auth-logo-fallback"><em>i</em>LO<span>KAL</span></div>
+            <p class="auth-tagline">Explore the City of Love</p>
+          </div>
+
+          <div style="flex: 1; min-height: 30px"></div>
+
+          <div class="login-fields-wrap" style="margin-bottom: 14px">
+            <input class="float-input" type="email" placeholder="Email" />
+            <div class="pw-wrap">
+              <input
+                class="float-input"
+                type="password"
+                id="pw-input"
+                placeholder="Password"
+              />
+              <button class="pw-eye" onclick="togglePw()">
+                <i id="eye-icon" class="fa fa-eye"></i>
+              </button>
+            </div>
+            <div class="forgot-pw">Forgot Password?</div>
+          </div>
+
+          <div class="auth-card">
+            <button class="btn-dark" onclick="goTo('s-usertype')">
+              Create new account
+            </button>
+            <div class="link-alt" onclick="goTo('s-home')">
+              I already have an account
+            </div>
+            <div class="divider-row">
+              <hr />
+              <span>Sign up with</span>
+              <hr />
+            </div>
+            <div class="social-row">
+              <div class="social-btn"><i class="fab fa-instagram"></i></div>
+              <div class="social-btn"><i class="fab fa-google"></i></div>
+              <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: USER TYPE ========================= -->
+        <div id="s-usertype" class="screen" style="background: #b8cfe0">
+          <div class="auth-bg"></div>
+
+          <div class="auth-top">
+            <img
+              class="auth-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="auth-logo-fallback"><em>i</em>LO<span>KAL</span></div>
+            <p class="auth-tagline">Explore the City of Love</p>
+          </div>
+
+          <div style="flex: 1; min-height: 20px"></div>
+
+          <div class="usertype-card">
+            <h2>What type of user are you?</h2>
+            <button class="type-btn" onclick="selectUser('Student', this)">
+              Student
+            </button>
+            <button class="type-btn" onclick="selectUser('Teacher', this)">
+              Teacher
+            </button>
+            <button class="type-btn" onclick="selectUser('Independent', this)">
+              Independent
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: PERSONAL INFO ========================= -->
+        <div id="s-info" class="screen" style="background: #b8cfe0">
+          <div class="auth-bg"></div>
+
+          <div class="auth-top">
+            <img
+              class="auth-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="auth-logo-fallback"><em>i</em>LO<span>KAL</span></div>
+            <p class="auth-tagline">Explore the City of Love</p>
+          </div>
+
+          <div style="flex: 1; min-height: 10px"></div>
+
+          <div class="info-card">
+            <h2>Enter personal information</h2>
+            <input
+              class="info-input"
+              type="text"
+              placeholder="Name"
+              id="inp-name"
+            />
+            <input class="info-input" type="number" placeholder="Age" />
+            <input class="info-input" type="text" placeholder="School" />
+            <input class="info-input" type="text" placeholder="Gender" />
+            <input class="info-input" type="email" placeholder="Email" />
+            <button
+              class="btn-dark"
+              onclick="startApp()"
+              style="margin-top: 6px"
+            >
+              Get Started →
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: HOME ========================= -->
+        <div id="s-home" class="screen">
+          <div class="top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+
+          <div class="scroll-body">
+            <!-- Facts carousel -->
+            <div class="facts-card" style="margin-top: 14px">
+            <img
+                src="/iLOKAL-/Plaza Libertad.png"   
+                alt="Plaza Libertad"
+                onerror="this.src='https://via.placeholder.com/400x250?text=Image+Not+Found'"
+            />
+            <div class="facts-overlay">
+                <span class="facts-badge">Facts For You</span>
+                <div class="facts-bottom">
+                <div class="facts-title">Plaza Libertad</div>
+                <div class="facts-desc">
+                    A historic square where the Philippine flag was raised in
+                    1898 after Spanish rule ended in Iloilo.
+                </div>
+                <div class="facts-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Explore header -->
+            <div class="section-hdr">
+              <h3>Let's explore</h3>
+              <a onclick="goTo('s-features')">View all ›</a>
+            </div>
+
+            <!-- Category banners -->
+            <div class="cat-banner" onclick="goTo('s-places')">
+              <img src="/iLOKAL-/37.png" alt="Places" />
+              <div class="cat-overlay">
+                <span class="cat-label">Places</span>
+              </div>
+            </div>
+
+            <div class="cat-banner">
+              <img src="/iLOKAL-/38.png" alt="Foods" />
+              <div class="cat-overlay">
+                <span class="cat-label">Foods</span>
+              </div>
+            </div>
+
+            <div class="cat-banner">
+              <img src="/iLOKAL-/39.png" alt="Festivities" />
+              <div class="cat-overlay">
+                <span class="cat-label">Festivities</span>
+              </div>
+            </div>
+
+            <div class="cat-banner">
+              <img src="/iLOKAL-/40.png" alt="Products" />
+              " />
+              <div class="cat-overlay">
+                <span class="cat-label">Products</span>
+              </div>
+            </div>
+
+            <div class="cat-banner" style="margin-bottom: 16px">
+              <img src="/iLOKAL-/41.png" alt="Institutions" />
+              <div class="cat-overlay">
+                <span class="cat-label">Institutions</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block">
+                <i class="fa fa-bell"></i>
+                <span class="nav-badge">1</span>
+              </span>
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item active" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: FEATURES (VIEW ALL) ========================= -->
+        <div id="s-features" class="screen">
+          <div class="top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+
+          <div class="scroll-body">
+            <div style="padding: 16px 16px 8px">
+              <h3 style="font-size: 18px; font-weight: 800">Let's explore</h3>
+            </div>
+
+            <div class="cat-banner" onclick="goTo('s-places')">
+              <img src="/iLOKAL-/37.png" alt="Places" />
+              <div class="cat-overlay">
+                <span class="cat-label">Places</span>
+              </div>
+            </div>
+            <div class="cat-banner">
+              <img src="/iLOKAL-/38.png" alt="Foods" />
+              <div class="cat-overlay">
+                <span class="cat-label">Foods</span>
+              </div>
+            </div>
+            <div class="cat-banner">
+              <img src="/iLOKAL-/39.png" alt="Festivities" />
+              <div class="cat-overlay">
+                <span class="cat-label">Festivities</span>
+              </div>
+            </div>
+            <div class="cat-banner">
+              <img src="/iLOKAL-/40.png" alt="Products" />
+              <div class="cat-overlay">
+                <span class="cat-label">Products</span>
+              </div>
+            </div>
+            <div class="cat-banner" style="margin-bottom: 16px">
+              <img src="/iLOKAL-/41.png" alt="Institutions" />
+              <div class="cat-overlay">
+                <span class="cat-label">Institutions</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block"
+                ><i class="fa fa-bell"></i
+                ><span class="nav-badge">1</span></span
+              >
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item active" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: PLACES ========================= -->
+        <div id="s-places" class="screen">
+          <div class="top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+
+          <div class="scroll-body">
+            <div class="places-subhdr">Let's explore</div>
+            <div><span class="places-pill">Places</span></div>
+            <div class="places-grid">
+              <div class="place-card" onclick="goTo('s-article')">
+                <div class="place-img-frame">
+                  <img
+                    src="/iLOKAL-/42.png"
+                    alt="Jaro Cathedral"
+                  />
+                </div>
+                <div class="place-name">Jaro Cathedral</div>
+              </div>
+              <div class="place-card" onclick="goTo('s-article')">
+                <div class="place-img-frame">
+                  <img
+                    src="/iLOKAL-/43.png"
+                    alt="Plaza Libertad"
+                  />
+                </div>
+                <div class="place-name">Plaza Libertad</div>
+              </div>
+              <div class="place-card">
+                <div class="place-img-frame">
+                  <img
+                    src="/iLOKAL-/44.png"
+                    alt="Casa Mariquit"
+                  />
+                </div>
+                <div class="place-name">Casa Mariquit</div>
+              </div>
+              <div class="place-card">
+                <div class="place-img-frame">
+                  <img
+                    src="/iLOKAL-/45.png"
+                    alt="Sunburst Park"
+                  />
+                </div>
+                <div class="place-name">Sunburst Park</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block"
+                ><i class="fa fa-bell"></i
+                ><span class="nav-badge">1</span></span
+              >
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item active" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: ARTICLE ========================= -->
+        <div id="s-article" class="screen">
+          <div class="article-top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+
+          <div class="article-green-hdr">
+            <h2>Heritage Landmark: Jaro Cathedral</h2>
+          </div>
+
+          <div class="article-body">
+            <div class="gray-curve"></div>
+            <div class="article-body-inner">
+              <!-- Introduction – always shown -->
+              <div class="a-card">
+                <div class="a-card-title">Introduction</div>
+                <p class="a-card-body">
+                  The Jaro Cathedral, formally known as the National Shrine of
+                  Our Lady of the Candles (Nuestra Señora de la Candelaria), is
+                  a Roman Catholic cathedral situated in the heart of the Jaro
+                  district in Iloilo City. As a premier religious and historical
+                  landmark, it serves as the seat of the Archdiocese of Jaro and
+                  stands as a cornerstone of Ilonggo faith and history. It is
+                  vital to Iloilo not only as a place of worship but as a symbol
+                  of the region's deep-seated Catholic roots and its former
+                  status as the "Queen City of the South." What makes it truly
+                  unique in the Philippines is its detached bell tower, located
+                  across the street in Jaro Plaza, and its distinctive
+                  "all-male" ensemble of saints lining the cathedral's interior
+                  pillars—a direct contrast to the "feminist" Molo Church
+                  nearby. The cathedral is woven into Iloilo's collective memory
+                  through the annual Jaro Fiesta, representing a blend of
+                  Spanish colonial influence and local devotion.
+                </p>
+              </div>
+
+              <!-- STUDENT: quiz gate -->
+              <div id="quiz-instruction" class="article-instruction">
+                In order to read the full article, answer the quiz below
+              </div>
+
+              <!-- Quiz -->
+              <div id="quiz-card" class="quiz-card">
+                <div class="quiz-badge">Quiz</div>
+                <div class="quiz-question">
+                  What is the formal name of Jaro Cathedral?
+                </div>
+                <div class="quiz-option" onclick="answerQuiz(this, 'A')">
+                  A. San Agustin Church
+                </div>
+                <div class="quiz-option" onclick="answerQuiz(this, 'B')">
+                  B. National Shrine of Our Lady of the Candles
+                </div>
+                <div class="quiz-option" onclick="answerQuiz(this, 'C')">
+                  C. Miagao Church
+                </div>
+                <div class="quiz-option" onclick="answerQuiz(this, 'D')">
+                  D. Molo Church
+                </div>
+                <div class="quiz-correct-line" id="quiz-correct">
+                  Correct answer: <strong>B</strong>
+                </div>
+              </div>
+
+              <!-- Full article (unlocked for teacher / after quiz) -->
+              <div id="full-article" style="display: none">
+                <div class="a-card">
+                  <div class="a-card-title">Full Article</div>
+
+                  <div class="a-section-title">Historical Origin</div>
+                  <p class="a-card-body">
+                    The cathedral was established in 1864 when the Diocese of
+                    Jaro was created, though the present structure was completed
+                    and consecrated in 1874 under the direction of the first
+                    Bishop of Jaro, Mariano Cuartero. Its creation was a result
+                    of the growing economic and religious importance of Jaro
+                    during the 19th-century sugar boom, which necessitated a
+                    grander seat for the clergy. While the site itself does not
+                    have documented pre-colonial roots, it became a focal point
+                    for Spanish ecclesiastical power in Panay. Over the decades,
+                    the cathedral survived significant historical upheavals; it
+                    was severely damaged by the Lady Caycay earthquake in 1948,
+                    which destroyed the original upper portions of the belfry,
+                    leading to major reconstructions. Historically, it is famed
+                    as the site where the Filipino patriot Graciano Lopez Jaena
+                    was baptized, linking the landmark to the Philippine
+                    Revolution and the nation's struggle for identity.
+                  </p>
+
+                  <div class="a-section-title">Architectural Style</div>
+                  <p class="a-card-body">
+                    The cathedral reflects a Romanesque Revival style,
+                    characterized by its heavy masonry, rounded arches, and
+                    sturdy proportions. Unlike the more common Baroque churches
+                    found in the Philippines, Jaro Cathedral features a more
+                    restrained, stately aesthetic with a distinct cruciform
+                    plan. It was constructed using coral stone, baked bricks,
+                    and lime mortar—materials typical of the Spanish colonial
+                    era—and showcases the craftsmanship of local artisans who
+                    adapted European styles to the Philippine climate. The
+                    façade is notably topped by a staircase leading to the
+                    miraculous shrine of the Candelaria, the only Marian image
+                    in the country personally crowned by a Pope (John Paul II in
+                    1981).
+                  </p>
+
+                  <div class="a-section-title">Stories and Folklore</div>
+                  <p class="a-card-body">
+                    The most enduring legend surrounding the cathedral concerns
+                    the Nuestra Señora de la Candelaria. Local folklore claims
+                    that the stone image of the Virgin Mary, found in the Iloilo
+                    River centuries ago, was originally small but began to grow
+                    larger and heavier over time. It is said that in the past,
+                    the image would disappear from its niche at night, with
+                    witnesses claiming to see a beautiful lady bathing her child
+                    in a nearby well. This miraculous reputation has made the
+                    cathedral a primary pilgrimage site, with the "miraculous"
+                    growth of the statue serving as a metaphor for the
+                    flourishing faith of the Ilonggo people.
+                  </p>
+
+                  <div class="a-section-title">Roles and Preservation</div>
+                  <p class="a-card-body">
+                    The Jaro Cathedral has played a pivotal role in Iloilo's
+                    political and social life, acting as a gathering point for
+                    the elite and the masses alike during the colonial and
+                    post-war eras. Today, it is preserved as a National
+                    Historical Landmark, a designation that ensures government
+                    support for its conservation. While it faces modern threats
+                    such as environmental weathering and the vibrations from
+                    heavy city traffic, the Archdiocese and the National
+                    Historical Commission of the Philippines (NHCP) work
+                    together to maintain its structural integrity.
+                  </p>
+
+                  <p class="a-card-body" style="margin-top: 12px">
+                    Beyond its religious function, the cathedral is a powerhouse
+                    for tourism and education, drawing thousands of visitors who
+                    seek to understand the intersection of Iloilo's colonial
+                    past and its vibrant, living traditions.
+                  </p>
+                </div>
+
+                <!-- References -->
+                <div class="a-card">
+                  <div
+                    class="a-section-title"
+                    style="text-align: left; margin-top: 0"
+                  >
+                    References
+                  </div>
+                  <div class="ref-item">
+                    Archdiocese of Jaro. (2012, February 2). National Shrine of
+                    Our Lady of the Candles (Jaro Cathedral).
+                    <a
+                      class="ref-link"
+                      href="/iLOKAL-/46.png"
+                      target="_blank"
+                      >https://archdioceseofjaroph.org/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    National Historical Commission of the Philippines. (1976).
+                    Jaro Cathedral: A National Historical Landmark. NHCP Digital
+                    Archives.
+                    <a
+                      class="ref-link"
+                      href="/iLOKAL-/47.png"
+                      target="_blank"
+                      >https://nhcp.gov.ph/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    National Museum of the Philippines. (2016, December 16).
+                    List of National Cultural Treasures and Important Cultural
+                    Properties: Western Visayas.
+                    <a
+                      class="ref-link"
+                      href="/iLOKAL-/48.png"
+                      target="_blank"
+                      >https://www.nationalmuseum.gov.ph/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    Rivera, R. G., &amp; Santos, M. L. (2020). Determination of
+                    the golden ratio in selected 16th to mid-19th century
+                    churches of Panay Island, Central Philippines.
+                    <em>Publiscience</em>, 3(1), 15–20.
+                  </div>
+                </div>
+
+                <!-- More Pictures -->
+                <div class="a-card">
+                  <div class="more-pics-title">More Pictures</div>
+                  <div class="pics-scroll">
+                    <img
+                      class="pic-thumb"
+                      src="/iLOKAL-/46.png"
+                      alt="Jaro 1"
+                    />
+                    <img
+                      class="pic-thumb"
+                      src="/iLOKAL-/47.png"
+                      alt="Jaro 2"
+                    />
+                    <img
+                      class="pic-thumb"
+                      src="/iLOKAL-/48.png"
+                      alt="Jaro 3"
+                    />
+                  </div>
+                  <div class="pics-footer">
+                    <div class="pics-dots">
+                      <div class="dot active"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                    </div>
+                    <div class="swipe-hint">Swipe ›</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEACHER-ONLY CONTENT -->
+              <div id="teacher-content" style="display: none">
+                <!-- Instructional Materials -->
+                <div class="a-card">
+                  <div
+                    class="a-section-title"
+                    style="text-align: left; margin-top: 0"
+                  >
+                    Instructional Materials
+                  </div>
+                  <div class="instruct-list">
+                    <div class="instruct-item">
+                      Architectural Feature Flashcards: Cards featuring specific
+                      Romanesque Revival elements found in the cathedral (e.g.,
+                      rounded arches, cruciform plan, coral stone textures) for
+                      identification.
+                    </div>
+                    <div class="instruct-item">
+                      The "Gendered Church" Photo Essay: A side-by-side visual
+                      comparison of Jaro Cathedral's "all-male" statues versus
+                      Molo Church's "all-female" statues to illustrate local
+                      ecclesiastical history.
+                    </div>
+                    <div class="instruct-item">
+                      3D Paper Model: A printable "cut-out-and-fold" template of
+                      the cathedral and its detached belfry to demonstrate
+                      Spanish-era urban planning (where the tower is separated
+                      from the main body).
+                    </div>
+                    <div class="instruct-item">
+                      Interactive Timeline: A digital or physical timeline
+                      highlighting the 1864 establishment, the 1948 "Lady
+                      Caycay" earthquake, and the 1981 Papal visit.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Teaching Strategies -->
+                <div class="a-card">
+                  <div class="a-section-title" style="margin-top: 0">
+                    Teaching Strategies
+                  </div>
+                  <div class="strategy-item">
+                    • <strong>Site-Symbol Analysis:</strong> Ask students to
+                    analyze why the belfry is across the street. Strategy:
+                    Discuss the tactical and safety reasons (earthquake
+                    resistance and lookout points) during the colonial era.
+                  </div>
+                  <div class="strategy-item">
+                    • <strong>"Living Legend" Storytelling:</strong> Have
+                    students reenact or illustrate the folklore of the "growing"
+                    statue of the Candelaria. Strategy: Use this to discuss how
+                    oral traditions strengthen the "sacredness" of a physical
+                    landmark.
+                  </div>
+                  <div class="strategy-item">
+                    • <strong>Historical Role-Play:</strong> Students take on
+                    roles (Bishop Cuartero, a Spanish architect, or a local
+                    laborer) to debate the reconstruction of the cathedral after
+                    the 1948 earthquake.
+                  </div>
+                </div>
+
+                <!-- Teacher References -->
+                <div class="a-card">
+                  <div
+                    class="a-section-title"
+                    style="text-align: left; margin-top: 0"
+                  >
+                    References
+                  </div>
+                  <div class="ref-item">
+                    Archdiocese of Jaro. (2012, February 2). National Shrine of
+                    Our Lady of the Candles (Jaro Cathedral).
+                    <a
+                      class="ref-link"
+                      href="https://archdioceseofjaroph.org/"
+                      target="_blank"
+                      >https://archdioceseofjaroph.org/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    National Historical Commission of the Philippines. (1976).
+                    Jaro Cathedral: A National Historical Landmark. NHCP Digital
+                    Archives.
+                    <a
+                      class="ref-link"
+                      href="https://nhcp.gov.ph/"
+                      target="_blank"
+                      >https://nhcp.gov.ph/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    National Museum of the Philippines. (2016). List of National
+                    Cultural Treasures and Important Cultural Properties:
+                    Western Visayas.
+                    <a
+                      class="ref-link"
+                      href="https://www.nationalmuseum.gov.ph/"
+                      target="_blank"
+                      >https://www.nationalmuseum.gov.ph/</a
+                    >
+                  </div>
+                  <div class="ref-item">
+                    Rivera, R. G., &amp; Santos, M. L. (2020). Determination of
+                    the golden ratio in selected 16th to mid-19th century
+                    churches of Panay Island. <em>Publiscience</em>, 3(1),
+                    15–20.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /article-body-inner -->
+          </div>
+          <!-- /article-body -->
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block"
+                ><i class="fa fa-bell"></i
+                ><span class="nav-badge">1</span></span
+              >
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item active" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: PROFILE ========================= -->
+        <div id="s-profile" class="screen" style="background: white">
+          <div class="scroll-body">
+            <div class="profile-logo-wrap">
+              <img
+                class="profile-logo"
+                src="iLOKAL_logo.png"
+                alt="iLOKAL"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'block';
+                "
+              />
+              <div class="profile-logo-text"><span>i</span>LOKAL</div>
+
+              <img
+                class="profile-avatar"
+                src="/iLOKAL-/JUAN.png"
+                alt="User"
+              />
+              <div class="profile-name" id="profile-name-display">
+                Tomas Confesor
+              </div>
+              <div class="profile-handle">@sitomasi2r</div>
+              <div class="profile-pills">
+                <button class="pill pill-blue">Level 3</button>
+                <button class="pill pill-dark">143 points</button>
+              </div>
+              <div class="profile-share">Share with friends</div>
+              <hr class="profile-divider" />
+            </div>
+
+            <!-- Overview -->
+            <div class="overview-wrap">
+              <div class="overview-hdr">
+                <h3>Overview</h3>
+                <span>Swipe ›</span>
+              </div>
+              <div class="ov-scroll">
+                <div class="ov-card" onclick="goTo('s-article')">
+                  <div class="ov-img-wrap">
+                    <img src="/iLOKAL-/37.png" alt="Places" />
+                    <div class="ov-cat-overlay">
+                      <span class="ov-cat-text">Places</span>
+                    </div>
+                  </div>
+                  <div class="ov-body">
+                    <div class="ov-name">Jaro Cathedral</div>
+                    <div class="ov-desc">
+                      One of the most important religious sit...
+                    </div>
+                  </div>
+                </div>
+                <div class="ov-card">
+                  <div class="ov-img-wrap">
+                    <img src="/iLOKAL-/38.png" />
+                    <div class="ov-cat-overlay">
+                      <span class="ov-cat-text">Foods</span>
+                    </div>
+                  </div>
+                  <div class="ov-body">
+                    <div class="ov-name">La Paz Batchoy</div>
+                    <div class="ov-desc">
+                      The most iconic dish from Iloilo—a rich noo...
+                    </div>
+                  </div>
+                </div>
+                <div class="ov-card">
+                  <div class="ov-img-wrap">
+                    <img src="/iLOKAL-/39.png" alt="Festivities" />
+                    <div class="ov-cat-overlay">
+                      <span class="ov-cat-text">Festivities</span>
+                    </div>
+                  </div>
+                  <div class="ov-body">
+                    <div class="ov-name">Dinagyang</div>
+                    <div class="ov-desc">
+                      The Dinagyang festival is Iloilo's m...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="height: 20px"></div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block"
+                ><i class="fa fa-bell"></i
+                ><span class="nav-badge">1</span></span
+              >
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: NOTIFICATIONS ========================= -->
+        <div id="s-notifications" class="screen">
+          <div class="top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+          <div class="empty-state">
+            <i class="fa fa-bell"></i>
+            <p>No notifications yet</p>
+          </div>
+          <div class="bottom-nav">
+            <div
+              class="nav-item active"
+              onclick="switchNav(this, 's-notifications')"
+            >
+              <i class="fa fa-bell"></i><span>Notifications</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-settings')">
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= SCREEN: SETTINGS ========================= -->
+        <div id="s-settings" class="screen">
+          <div class="top-bar">
+            <img
+              class="bar-avatar"
+              src="/iLOKAL-/JUAN.png"
+              alt="user"
+              onclick="goTo('s-profile')"
+            />
+            <img
+              class="bar-logo"
+              src="iLOKAL_logo.png"
+              alt="iLOKAL"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'block';
+              "
+            />
+            <div class="bar-logo-text"><span>i</span>LOKAL</div>
+            <div class="bar-search"><i class="fa fa-search"></i></div>
+          </div>
+          <div class="scroll-body">
+            <div style="padding: 18px 16px">
+              <div class="settings-user-card">
+                <img src="/iLOKAL-/JUAN.png" alt="User" />
+                <div>
+                  <div class="settings-user-name" id="settings-name">
+                    Wanpichit
+                  </div>
+                  <div class="settings-user-type" id="settings-type">
+                    Student
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <div class="settings-row">
+                  <div class="settings-row-left">
+                    <div class="settings-icon" style="background: #fff0f2">
+                      <i class="fa fa-user" style="color: #c8173a"></i>
+                    </div>
+                    Edit Profile
+                  </div>
+                  <i
+                    class="fa fa-chevron-right"
+                    style="color: #ccc; font-size: 12px"
+                  ></i>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-left">
+                    <div class="settings-icon" style="background: #fff0f2">
+                      <i class="fa fa-bell" style="color: #c8173a"></i>
+                    </div>
+                    Notifications
+                  </div>
+                  <i
+                    class="fa fa-chevron-right"
+                    style="color: #ccc; font-size: 12px"
+                  ></i>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-left">
+                    <div class="settings-icon" style="background: #fff0f2">
+                      <i class="fa fa-shield-alt" style="color: #c8173a"></i>
+                    </div>
+                    Privacy
+                  </div>
+                  <i
+                    class="fa fa-chevron-right"
+                    style="color: #ccc; font-size: 12px"
+                  ></i>
+                </div>
+                <div class="settings-row" onclick="goTo('s-login')">
+                  <div class="settings-row-left" style="color: #e53935">
+                    <div class="settings-icon" style="background: #fff0f2">
+                      <i class="fa fa-sign-out-alt" style="color: #e53935"></i>
+                    </div>
+                    Log Out
+                  </div>
+                  <i
+                    class="fa fa-chevron-right"
+                    style="color: #ccc; font-size: 12px"
+                  ></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="switchNav(this, 's-notifications')">
+              <span style="position: relative; display: inline-block"
+                ><i class="fa fa-bell"></i
+                ><span class="nav-badge">1</span></span
+              >
+              <span>Notifications</span>
+            </div>
+            <div class="nav-item" onclick="switchNav(this, 's-home')">
+              <i class="fa fa-home"></i><span>Home</span>
+            </div>
+            <div
+              class="nav-item active"
+              onclick="switchNav(this, 's-settings')"
+            >
+              <i class="fa fa-cog"></i><span>Settings</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /phone-screen -->
+    </div>
+    <!-- /phone-outer -->
+
+    <script>
+      /* ===== STATE ===== */
+      let userType = "Student";
+      let userName = "Wanpichit";
+      let screenHistory = ["s-login"];
+      let quizAnswered = false;
+
+      /* ===== ROUTING ===== */
+      function goTo(id) {
+        const cur = screenHistory[screenHistory.length - 1];
+        if (cur !== id) screenHistory.push(id);
+        showScreen(id);
+      }
+
+      function goBack() {
+        if (screenHistory.length > 1) {
+          screenHistory.pop();
+          showScreen(screenHistory[screenHistory.length - 1]);
+        }
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.add("active");
+          // scroll to top
+          el.querySelectorAll(".scroll-body, .article-body").forEach(
+            (b) => (b.scrollTop = 0),
+          );
+          if (id === "s-article") setupArticle();
+        }
+      }
+
+      function switchNav(el, screenId) {
+        el.closest(".bottom-nav")
+          .querySelectorAll(".nav-item")
+          .forEach((i) => i.classList.remove("active"));
+        el.classList.add("active");
+        screenHistory = [screenId];
+        showScreen(screenId);
+      }
+
+      /* ===== USER SELECTION ===== */
+      function selectUser(type, btn) {
+        userType = type;
+        document
+          .querySelectorAll(".type-btn")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        document.getElementById("settings-type").textContent = type;
+        setTimeout(() => goTo("s-info"), 300);
+      }
+
+      /* ===== START APP ===== */
+      function startApp() {
+        const nameEl = document.getElementById("inp-name");
+        if (nameEl && nameEl.value.trim()) {
+          userName = nameEl.value.trim().split(" ")[0];
+          document.getElementById("settings-name").textContent = userName;
+          document.getElementById("profile-name-display").textContent =
+            nameEl.value.trim();
+        }
+        goTo("s-home");
+      }
+
+      /* ===== ARTICLE SETUP ===== */
+      function setupArticle() {
+        quizAnswered = false;
+
+        const quizInstruct = document.getElementById("quiz-instruction");
+        const quizCard = document.getElementById("quiz-card");
+        const fullArticle = document.getElementById("full-article");
+        const teacherCont = document.getElementById("teacher-content");
+        const correctLine = document.getElementById("quiz-correct");
+
+        // reset quiz state
+        correctLine.className = "quiz-correct-line";
+        document
+          .querySelectorAll(".quiz-option")
+          .forEach((o) => o.classList.remove("correct", "wrong"));
+
+        if (userType === "Teacher") {
+          quizInstruct.style.display = "none";
+          quizCard.style.display = "none";
+          fullArticle.style.display = "block";
+          teacherCont.style.display = "block";
+        } else {
+          quizInstruct.style.display = "block";
+          quizCard.style.display = "block";
+          fullArticle.style.display = "none";
+          teacherCont.style.display = "none";
+        }
+      }
+
+      /* ===== QUIZ ===== */
+      function answerQuiz(el, letter) {
+        if (quizAnswered) return;
+        quizAnswered = true;
+
+        const correct = "B";
+        if (letter === correct) {
+          el.classList.add("correct");
+        } else {
+          el.classList.add("wrong");
+          document.querySelectorAll(".quiz-option").forEach((o) => {
+            if (o.textContent.trim().startsWith("B."))
+              o.classList.add("correct");
+          });
+        }
+
+        document.getElementById("quiz-correct").className =
+          "quiz-correct-line show";
+
+        setTimeout(() => {
+          document.getElementById("quiz-instruction").style.display = "none";
+          document.getElementById("full-article").style.display = "block";
+        }, 1400);
+      }
+
+      /* ===== PASSWORD TOGGLE ===== */
+      function togglePw() {
+        const pw = document.getElementById("pw-input");
+        const icon = document.getElementById("eye-icon");
+        if (pw.type === "password") {
+          pw.type = "text";
+          icon.className = "fa fa-eye-slash";
+        } else {
+          pw.type = "password";
+          icon.className = "fa fa-eye";
+        }
+      }
+
+      /* ===== FACTS CAROUSEL (auto-rotate) ===== */
+      const factsData = [
+        {
+          img: "iLOKAL-/Plaza Libertad.png",
+          title: "Plaza Libertad",
+          desc: "A historic square where the Philippine flag was raised in 1898 after Spanish rule ended in Iloilo.",
+        },
+        {
+          img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Jaro_Cathedral_%28Iloilo%2C_Philippines%29.jpg/1280px-Jaro_Cathedral_%28Iloilo%2C_Philippines%29.jpg",
+          title: "Jaro Cathedral",
+          desc: "The only Marian image in the Philippines personally crowned by a Pope — Saint John Paul II in 1981.",
+        },
+        {
+          img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Dinagyang_festival_2010.jpg/1280px-Dinagyang_festival_2010.jpg",
+          title: "Dinagyang Festival",
+          desc: "Iloilo's world-famous festival held every January, a showcase of Ilonggo culture and faith.",
+        },
+      ];
+      let factIdx = 0;
+
+      function rotateFact() {
+        factIdx = (factIdx + 1) % factsData.length;
+        const card = document.querySelector(".facts-card");
+        if (!card) return;
+        card.querySelector("img").src = factsData[factIdx].img;
+        card.querySelector(".facts-title").textContent =
+          factsData[factIdx].title;
+        card.querySelector(".facts-desc").textContent = factsData[factIdx].desc;
+        card
+          .querySelectorAll(".dot")
+          .forEach((d, i) => d.classList.toggle("active", i === factIdx));
+      }
+
+      setInterval(rotateFact, 4000);
+    </script>
+  </body>
+</html>
